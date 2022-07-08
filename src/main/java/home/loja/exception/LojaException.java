@@ -4,7 +4,8 @@ public class LojaException extends RuntimeException {
     
     // VSCode não gera essa variável constante, precisa gerar a mão.
     // Verificar se funciona fazendo a mão, do contrário, tentar sem ou com implements serializable
-    private static final long serialVersionUID = 7491873932486289748L;
+    private static final long serialVersionUID = -7491873932486289748L;
+    
 
     private String message;
 
