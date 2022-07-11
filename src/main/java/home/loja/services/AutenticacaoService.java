@@ -2,17 +2,17 @@ package home.loja.services;
 
 import java.util.Date;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.exceptions.JWTVerificationException;
 
 import home.loja.dto.autenticacao.AutenticacaoDTO;
 import home.loja.dto.autenticacao.TokenDTO;
@@ -21,8 +21,8 @@ import home.loja.entities.Usuario;
 @Service
 public class AutenticacaoService {
 
-    @Autowired
-    private AuthenticationManager authManager;
+    @Lazy
+    private final AuthenticationManager authManager;
 
     // Injeção das configurações do application.properties
     @Value("${loja.jwt.secret}")
@@ -33,6 +33,11 @@ public class AutenticacaoService {
 
     @Value("${loja.jwt.issuer}")
     private String issuer;
+
+    @Lazy
+    public AutenticacaoService(AuthenticationManager authManager) {
+        this.authManager = authManager;
+    }
 
     public TokenDTO autenticar(AutenticacaoDTO dto) throws AuthenticationException {
 
@@ -61,5 +66,26 @@ public class AutenticacaoService {
                 .withExpiresAt(dataExpiracao)
                 .withSubject(principal.getId().toString())
                 .sign(this.criarAlgoritmo());
+    }
+
+    public boolean verificaToken(String token) {
+
+        try {
+            if (token == null)
+                return false;
+            JWT.require(this.criarAlgoritmo()).withIssuer(issuer).build().verify(token);
+
+            return true;
+        } catch (JWTVerificationException exception) {
+
+            return false;
+        }
+    }
+
+    public Long retornarIdUsuario(String token) {
+
+        String subject = JWT.require(this.criarAlgoritmo()).withIssuer(issuer).build().verify(token).getSubject();
+
+        return Long.parseLong(subject);
     }
 }

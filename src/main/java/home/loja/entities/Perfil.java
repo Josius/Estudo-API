@@ -20,6 +20,13 @@ public class Perfil implements GrantedAuthority {
 
     private String nome;
 
+    public Perfil() {
+    }
+
+    public Perfil(Long id) {
+        this.id = id;
+    }
+
     public Long getId() {
         return id;
     }

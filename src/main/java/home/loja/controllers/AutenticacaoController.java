@@ -17,8 +17,11 @@ import home.loja.services.AutenticacaoService;
 @RequestMapping("v1/auth")
 public class AutenticacaoController {
 
-    @Autowired
-    private AutenticacaoService autenticacaoService;
+    private final AutenticacaoService autenticacaoService;
+
+    public AutenticacaoController(AutenticacaoService autenticacaoService) {
+        this.autenticacaoService = autenticacaoService;
+    }
 
     @PostMapping
     public ResponseEntity<TokenDTO> autenticar(@RequestBody AutenticacaoDTO dto) {

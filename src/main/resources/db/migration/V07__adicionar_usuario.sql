@@ -1,2 +1,0 @@
--- não está funcionando
--- INSERT INTO tb_usuario (email, senha, perfil_id) VALUES ('jram@gft.com', '$2a$10$d7VE1poEwT6hlucoI0rFTufT8klsHIdX4X6b4wPa4TjwnEIzAKy96', 1);

@@ -14,8 +14,11 @@ import home.loja.repositories.UsuarioRepository;
 @Service
 public class UsuarioService implements UserDetailsService {
 
-    @Autowired
-    private UsuarioRepository usuarioRepository;
+    private final UsuarioRepository usuarioRepository;
+
+    public UsuarioService(UsuarioRepository usuarioRepository) {
+        this.usuarioRepository = usuarioRepository;
+    }
 
     public Usuario buscarUsuarioPorEmail(String email) {
 
@@ -33,5 +36,21 @@ public class UsuarioService implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
         return buscarUsuarioPorEmail(username);
+    }
+
+    public Usuario buscarUsuarioPorId(Long idUsuario) {
+
+        Optional<Usuario> optional = usuarioRepository.findById(idUsuario);
+
+        if (optional.isEmpty()) {
+            throw new RuntimeException("Usuário não encontrado.");
+        }
+
+        return optional.get();
+    }
+
+    public Usuario salvaUsuario(Usuario usuario) {
+
+        return usuarioRepository.save(usuario);
     }
 }

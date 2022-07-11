@@ -3,15 +3,18 @@ package home.loja.entities;
 import java.util.Collection;
 import java.util.List;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.OneToOne;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(name = "tb_usuario")
@@ -25,10 +28,25 @@ public class Usuario implements UserDetails {
 
     private String email;
 
+    @JsonIgnore
     private String senha;
 
-    @OneToOne
+    @ManyToOne
     private Perfil perfil;
+
+    @ManyToOne
+    private Filial filial;
+
+    public Usuario() {
+    }
+
+    public Usuario(Long id, String email, String senha, Perfil perfil, Filial filial) {
+        this.id = id;
+        this.email = email;
+        this.senha = senha;
+        this.perfil = perfil;
+        this.filial = filial;
+    }
 
     public Long getId() {
         return id;
@@ -62,6 +80,14 @@ public class Usuario implements UserDetails {
         this.perfil = perfil;
     }
 
+    public Filial getFilial() {
+        return filial;
+    }
+
+    public void setFilial(Filial filial) {
+        this.filial = filial;
+    }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
 
@@ -69,6 +95,7 @@ public class Usuario implements UserDetails {
     }
 
     @Override
+    @JsonIgnore
     public String getPassword() {
 
         return getSenha();
@@ -103,4 +130,10 @@ public class Usuario implements UserDetails {
 
         return true;
     }
+
+    @Override
+    public String toString() {
+        return "Usuario [email=" + email + ", id=" + id + ", perfil=" + perfil + "]";
+    }
+
 }
