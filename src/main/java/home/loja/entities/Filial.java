@@ -23,6 +23,10 @@ public class Filial {
     public Filial() {
     }
 
+    public Filial(Long id) {
+        this.id = id;
+    }
+
     public Filial(Long id, String nome, Endereco endereco) {
         this.id = id;
         this.nome = nome;

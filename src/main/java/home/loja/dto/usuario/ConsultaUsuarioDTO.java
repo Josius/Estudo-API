@@ -1,4 +1,4 @@
-package home.loja.usuario;
+package home.loja.dto.usuario;
 
 import home.loja.dto.filial.ConsultaFilialDTO;
 

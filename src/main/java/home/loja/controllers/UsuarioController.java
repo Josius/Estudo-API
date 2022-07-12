@@ -7,11 +7,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import home.loja.dto.usuario.ConsultaUsuarioDTO;
+import home.loja.dto.usuario.RegistroUsuarioDTO;
+import home.loja.dto.usuario.UsuarioMapper;
 import home.loja.entities.Usuario;
 import home.loja.services.UsuarioService;
-import home.loja.usuario.ConsultaUsuarioDTO;
-import home.loja.usuario.RegistroUsuarioDTO;
-import home.loja.usuario.UsuarioMapper;
 
 @RestController
 @RequestMapping("v1/usuarios")

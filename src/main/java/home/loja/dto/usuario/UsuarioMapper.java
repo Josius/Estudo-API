@@ -1,4 +1,4 @@
-package home.loja.usuario;
+package home.loja.dto.usuario;
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
