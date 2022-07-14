@@ -13,16 +13,60 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import home.loja.filter.FiltroAutenticacao;
 import home.loja.services.AutenticacaoService;
 import home.loja.services.UsuarioService;
 
-@EnableWebSecurity
+// @EnableWebSecurity
+// @Configuration
+// @EnableGlobalMethodSecurity(prePostEnabled = true)
+// public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
+
+//     @Autowired
+//     private UsuarioService usuarioService;
+
+//     @Autowired
+//     private AutenticacaoService autenticacaoService;
+
+//     @Override
+//     @Bean
+//     protected AuthenticationManager authenticationManager() throws Exception {
+
+//         return super.authenticationManager();
+//     }
+
+//     @Override
+//     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+
+//         auth.userDetailsService(usuarioService).passwordEncoder(new BCryptPasswordEncoder());
+//     }
+
+//     @Override
+//     public void configure(WebSecurity web) throws Exception {
+//         // TODO Auto-generated method stub
+//         super.configure(web);
+//     }
+
+//     @Override
+//     protected void configure(HttpSecurity http) throws Exception {
+//         http.authorizeRequests()
+//                 .antMatchers(HttpMethod.POST, "/v1/auth").permitAll()
+//                 .anyRequest().authenticated()
+//                 .and().csrf().disable()
+//                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+//                 .and().addFilterBefore(new FiltroAutenticacao(autenticacaoService, usuarioService),
+//                         UsernamePasswordAuthenticationFilter.class);
+//     }
+
+// }
+
 @Configuration
+@EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
-public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
+public class SecurityConfiguration {
 
     @Autowired
     private UsuarioService usuarioService;
@@ -30,80 +74,37 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Autowired
     private AutenticacaoService autenticacaoService;
 
-    @Override
+    public BCryptPasswordEncoder encoder() {
+
+        return new BCryptPasswordEncoder();
+    }
+
     @Bean
-    protected AuthenticationManager authenticationManager() throws Exception {
+    protected AuthenticationManager authenticationManager(HttpSecurity http)
+            throws Exception {
 
-        return super.authenticationManager();
+        AuthenticationManagerBuilder authenticationManagerBuilder = http
+                .getSharedObject(AuthenticationManagerBuilder.class);
+        authenticationManagerBuilder.userDetailsService(usuarioService).passwordEncoder(encoder());
+        AuthenticationManager authenticationManager = authenticationManagerBuilder.build();
+
+        return authenticationManager;
     }
 
-    @Override
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+    @Bean
+    protected SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
-        auth.userDetailsService(usuarioService).passwordEncoder(new BCryptPasswordEncoder());
-    }
-
-    @Override
-    public void configure(WebSecurity web) throws Exception {
-        // TODO Auto-generated method stub
-        super.configure(web);
-    }
-
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests()
                 .antMatchers(HttpMethod.POST, "/v1/auth").permitAll()
                 .anyRequest().authenticated()
                 .and().csrf().disable()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                .and().addFilterBefore(new FiltroAutenticacao(autenticacaoService, usuarioService),
-                        UsernamePasswordAuthenticationFilter.class);
+                .and()
+                .authenticationManager(authenticationManager(http))
+                .addFilterBefore(new FiltroAutenticacao(autenticacaoService, usuarioService),
+                        UsernamePasswordAuthenticationFilter.class)
+                .httpBasic();
+
+        return http.build();
     }
-
 }
-// @Configuration
-// @EnableWebSecurity
-// @EnableGlobalMethodSecurity(prePostEnabled = true)
-// public class SecurityConfiguration {
-
-// @Autowired
-// private UsuarioService usuarioService;
-
-// @Autowired
-// private AutenticacaoService autenticacaoService;
-
-// public BCryptPasswordEncoder encoder() {
-
-// return new BCryptPasswordEncoder();
-// }
-
-// @Bean
-// protected AuthenticationManager authenticationManager(HttpSecurity http)
-// throws Exception {
-
-// AuthenticationManagerBuilder authenticationManagerBuilder = http
-// .getSharedObject(AuthenticationManagerBuilder.class);
-// authenticationManagerBuilder.userDetailsService(usuarioService).passwordEncoder(encoder());
-// AuthenticationManager authenticationManager =
-// authenticationManagerBuilder.build();
-
-// return authenticationManager;
-// }
-
-// @Bean
-// protected SecurityFilterChain filterChain(HttpSecurity http) throws Exception
-// {
-
-// http.authorizeRequests()
-// .antMatchers(HttpMethod.POST, "/auth").permitAll()
-// .anyRequest().authenticated()
-// .and().csrf().disable()
-// .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-// .and()
-// .authenticationManager(authenticationManager(http))
-// .addFilterBefore(new FiltroAutenticacao(autenticacaoService, usuarioService),
-// UsernamePasswordAuthenticationFilter.class)
-// .httpBasic();
-
-// return http.build();
-// }
